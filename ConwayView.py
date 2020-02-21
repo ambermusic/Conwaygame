@@ -7,6 +7,7 @@ def name(i, j):
 
 
 class Application(tk.Frame):
+
     def __init__(self, n, master=None):
         self.keep_running = False
         if master is None:
@@ -22,11 +23,15 @@ class Application(tk.Frame):
         self.after(500, self.task())
 
     def task(self):
+        """If keep_running is true, will increment by one time step every half second.
+        Should only be called once.
+        """
         self.after(500, self.task)
         if self.keep_running:
             self.time_step()
 
     def __create_widgets(self):
+        """Creates the frame with the buttons and canvas to display."""
         # Frame to put in all the buttons
         self.top_frame = tk.Frame(self)
         self.top_frame.pack(side="top")
@@ -56,30 +61,37 @@ class Application(tk.Frame):
         self.w.pack()
 
     def create_rectangles(self):
+        """Initializing the set of rectangles to display on the main canvas."""
         for i in range(self.n):
             for j in range(self.n):
                 self.w.create_rectangle(10 + i * 10, 10 + j * 10, 20 + i * 10, 20 + j * 10,
                                         fill="#000000", tag=name(i, j))
 
     def randomize(self):
+        """Creates a grid with random starting state. 50% of all rectangles will be alive."""
         self.conway.randomize()
         self.update_display()
 
     def restart(self):
+        """Clears the current grid."""
         self.conway.zeros()
         self.update_display()
 
     def time_step(self):
+        """Tells the grid to proceed one time step."""
         self.conway.next_conway()
         self.update_display()
 
     def start_running(self):
+        """Tells the game to start autoupdating."""
         self.keep_running = True
 
     def stop_running(self):
+        """Tells the game to stop autoupdating."""
         self.keep_running = False
 
     def update_display(self):
+        """Reads from the current grid and updates the display according to the current state."""
         for x in self.conway:
             if x[2] == 0:
                 color = "#ffffff"
@@ -88,6 +100,7 @@ class Application(tk.Frame):
             self.w.itemconfig(name(x[0], x[1]), fill=color)
 
     def clicked_canvas(self, event):
+        """Switches the state of the grid at the mouse pointer."""
         row = (event.x - 10) // 10
         col = (event.y - 10) // 10
         self.conway.flip_square(row, col)
